@@ -1,1 +1,1 @@
-# Segmentation_Of_Pathologies
+# Segmentation Of Pathologies
