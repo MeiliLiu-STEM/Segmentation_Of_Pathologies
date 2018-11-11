@@ -1,0 +1,56 @@
+import pandas as pd
+from skimage import io
+from skimage.transform import rotate
+import cv2
+
+
+# Augmentaton data with rotation and mirroring
+
+def rotate_images(file_path, degrees_of_rotation, lst_imgs):
+
+    for l in lst_imgs:
+        img = io.imread(file_path + str(l) + '.jpeg')
+        img = rotate(img, degrees_of_rotation)
+        io.imsave(file_path + str(l) + '_' + str(degrees_of_rotation) + '.jpeg', img)
+
+
+def mirror_images(file_path, lst_imgs):
+
+    for l in lst_imgs:
+        img = cv2.imread(file_path + str(l) + '.jpeg')
+        img = cv2.flip(img, 1)
+        cv2.imwrite(file_path + str(l) + '_mir' + '.jpeg', img)
+
+
+if __name__ == '__main__':
+    trainLabels = pd.read_csv("E:/trainLabels2.csv")
+
+    trainLabels['image'] = trainLabels['image'].str.rstrip('.jpeg')
+    trainLabels_no_DR = trainLabels[trainLabels['level'] == 0]
+    trainLabels_DR = trainLabels[trainLabels['level'] >= 1]
+
+    lst_imgs_no_DR = [i for i in trainLabels_no_DR['image']]
+    lst_imgs_DR = [i for i in trainLabels_DR['image']]
+
+
+    # Mirror Images with no DR one time
+    print("Mirroring Non-DR Images")
+    mirror_images('D:/train-resized-256/',lst_imgs_no_DR)
+    
+   # Rotate all images that have any level of DR
+    print("Rotating 90 Degrees")
+    rotate_images('D:/train-resized-256/', 90, lst_imgs_DR)
+    
+    print("Rotating 120 Degrees")
+    rotate_images('D:/train-resized-256/', 120, lst_imgs_DR)
+
+    print("Rotating 180 Degrees")
+    rotate_images('D:/train-resized-256/', 180, lst_imgs_DR)
+
+    print("Rotating 270 Degrees")
+    rotate_images('D:/train-resized-256/', 270, lst_imgs_DR)
+
+    print("Mirroring DR Images")
+    mirror_images('D:/train-resized-256/',lst_imgs_DR)
+
+    print("Completed")
